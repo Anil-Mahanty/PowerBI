@@ -1,0 +1,7 @@
+--> Highest Spend by category = MAXX (
+        CALCULATETABLE (
+            VALUES ( CATEGORY[CATEGORY_LVL1] ),
+            ALLSELECTED (  CATEGORY[CATEGORY_LVL1] )
+        ),         [PO Amount]     )
+--> Category Name of Highest Spend = FIRSTNONBLANK(TOPN(1,VALUES(CATEGORY[CATEGORY_LVL1]),[PO Amount]),1)
+--> Highest Spend by category = MAXX(all(CATEGORY[CATEGORY_LVL1]),[PO Amount])
