@@ -1,0 +1,5 @@
+= Table.AddColumn(#"Filtered Rows", "Custom", each Table.FromRecords({ [
+         #"During Hiring Process" = if Text.Contains([Frequency_of_such_screening__c], "During the hiring process") then "✔" else null, 
+         Anually = if Text.Contains([Frequency_of_such_screening__c], "Annually") then "✔" else null, 
+         Others = if Text.Contains([Frequency_of_such_screening__c], ";Other") then [Frequency_of_such_screening_Other__c] else null
+] }))
