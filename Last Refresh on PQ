@@ -1,0 +1,8 @@
+
+let
+    Source = DateTime.LocalNow(),
+    #"Converted to Table" = #table(1, {{Source}}),
+    #"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "Last Refreshed On"}}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"Last Refreshed On", type datetime}})
+in
+    #"Changed Type"
