@@ -1,0 +1,11 @@
+OpenTickets Total temp = // cumulative open trend
+var _Max_Date = MAX('Calendar'[Date])
+var _Open = CALCULATE (
+    COUNTROWS ( 'ManageEngine Report Framework' ),
+    FILTER (
+        ALLSELECTED('ManageEngine Report Framework'),
+            'ManageEngine Report Framework'[Created Time] <= _Max_Date
+            && ('ManageEngine Report Framework'[Resolved Time] > _Max_Date || ISBLANK ( 'ManageEngine Report Framework'[Resolved Time] )        )
+    ), 'Calendar'[Date] <= MAX('Calendar'[Date])
+)
+Return _Open
