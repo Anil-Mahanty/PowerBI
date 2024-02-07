@@ -1,0 +1,19 @@
+Limitations
+Python visuals in Power BI Desktop have the following limitations:
+
+	1. The data the Python visual uses for plotting is limited to 150,000 rows. If more than 150,000 rows are selected, only the top 150,000 rows are used, and a message appears on the image. The input data also has a limit of 250 MB.
+	2. If a Python visual calculation exceeds five minutes, the execution times out, which results in an error. 60secs in services
+	3. Memory consumption & Disk I/O: Limit 1GB
+	4. Image size for a visual in PNG format	2 MB
+	5. Python visuals respond to highlighting elements in other visuals, but you can't select elements in the Python visual to cross-filter other elements.
+	6. Python visuals don't support renaming input columns. Columns are referred to by their original names during script execution.
+	7. Python support in Power BI personal gateway
+	8. Python script execution is not supported for on-premises data gateways shared by multiple users
+	9. The following Python packages (non-Intel MKL) are currently supported for use in your Power BI reports:
+	matplotlib --> creating static, animated, and interactive visualizations
+	numpy --> working with numerical data / arrays. It also has functions for working in domain of linear algebra, fourier transform, and matrices, multi-dimensional arrays
+	pandas --> mainly works with the tabular data, for analyzing, cleaning, exploring, and manipulating data. using DataFrame and Series tools
+	scikit-learn --> ibrary that implements a range of machine learning, pre-processing, cross-validation
+	scipy --> used for scientific computing and technical computing, can say built on the NumPy extension
+	seaborn --> visualization library based on matplotlib. Seaborn is more comfortable in handling Pandas data frames.provides a variety of visualization patterns. It uses fewer syntax and has easily interesting default themes
+	statsmodels --> allows users to explore data, estimate statistical models, and perform statistical tests
