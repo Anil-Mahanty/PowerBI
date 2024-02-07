@@ -1,0 +1,49 @@
+Slides Carnival - https://www.slidescarnival.com/ 
+Google Slides Template Gallery - https://docs.google.com/presentation/... 
+SlidesGo - https://slidesgo.com/ 
+ColorHunt - https://colorhunt.co/ 
+ColorSpace - https://mycolor.space/ 
+Unsplash - https://unsplash.com/ 
+Pexels - https://www.pexels.com/ 
+Pixabay - https://pixabay.com/ 
+Flaticon - http://flaticon.com/ 
+TheNounProject - https://thenounproject.com/ 
+TypeWolf - https://www.typewolf.com/
+
+From <https://www.youtube.com/watch?v=5c9SapE_YNU&ab_channel=JeffSu> 
+
+====================================
+
+Dataset design and settings
+Dataset design, and their settings, can impact on gateway workloads. To reduce gateway workload, you can consider the following actions.
+For Import datasets:
+	• Configure less frequent data refresh
+	• Configure incremental refresh to minimize the amount of data to transfer
+	• Whenever possible, ensure query folding takes place
+	• Especially for large data volumes or a need for low-latency results, convert the design to a DirectQuery or Composite model
+For DirectQuery datasets:
+	• Optimize data sources, model, and report designs—for more information, see DirectQuery model guidance in Power BI Desktop
+	• Create aggregations to cache higher-level results to reduce the number of DirectQuery requests
+	• Restrict Automatic page refresh intervals, in report designs and capacity settings
+	• Especially when dynamic RLS is enforced, restrict dashboard cache update frequency
+	• Especially for smaller data volumes or for non-volatile data, convert the design to an Import or Composite model
+For Live Connection datasets:
+	• Especially when dynamic RLS is enforced, restrict dashboard cache update frequency
+
+From <https://docs.microsoft.com/en-us/power-bi/guidance/gateway-onprem-sizing> 
+==============================================================================
+Data Model:
+-----------------------
+Here are the steps involved in data modelling: 
+	1. Review the business challenge/BRD/FRD
+	2. Pull the right data from the business need
+	3. Collect and organize data
+	4. Create a conceptual model
+	5. Build the logical design
+	6. Build the physical design
+	7. Map stakeholders and their requirements of the data model
+	8. Perform a gap analysis of requirements vs. datasets
+	9. Create report/dashboard  results
+	10. Measure & modify data model to meet changing requirements
+
+From <https://www.zucisystems.com/blog/what-is-data-modeling-and-why-is-it-important/> 
