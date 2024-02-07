@@ -1,4 +1,5 @@
 Replace value in multiple column:
+---------------------------------------
 //1st way
 = Table.FromRecords(Table.TransformRows(#"Changed Type"
 , (x)=>Record.TransformFields(x, List.Transform( { "Col1", "Col1" }, (y) => { y, each if _  <> null then 115 else null}) ) ))
@@ -11,20 +12,38 @@ Replace value in multiple column:
 } ) ))
 
 Replace value in multiple value:
-
+----------------------------------------------------
 = Table.TransformColumns(#"Unpivoted Columns"
 ,{"Value",each Text.Replace(Text.Replace(Text.Replace(Text.Replace(Text.Replace(Text.Replace(Text.Start( _ , Text.PositionOf( _ , "#", Occurrence.All){1}),"{",""),"Freq:",""),"Data:",""),"Launch of RESOLVE event by",""),"Public Launch of the platform by",""),"Publish by","")
 }
 )
+
 Replace value in multiple value: exact value not pattern
+------------------------------------------------------------
 =Table.ReplaceValue(#"Changed Type",
 each [Col1],
 each if List.Contains({"text1", "text2"}, [Col1], Comparer.OrdinalIgnoreCase) then "Yes" else "No" ,
 Replacer.ReplaceValue,{"Col1"})
 
 Replace Text value with null:
+-------------------------------------------------------
 = Table.ReplaceValue(#"Transform Baseline UOM Format",each Type.Is(Value.Type([Baseline]),type text),null,(x,y,z)=>if y then z else x,{"Baseline"})
 
+Unix date conversion: SQL server
+----------------------------------------
+CAST(dateadd(s, "wo"."duebytime"  / 1000, convert(datetime, '1-1-1970 00:00:00')) AS date) as [CREATEDTIME]
+
+
 Remove HTML tag
+-----------------------------------------
 = Table.TransformColumns(#"Changed Type", {
         {"ReviewSummary__c", each try Table.FirstValue(Html.Table(_, {{"text",":root"}})) otherwise null}} )
+
+Power Query, union on selected column
+------------------------------------------------
+		e.g. = Table.Distinct(Table.Combine({
+		Table.RenameColumns(Table.SelectColumns(#"ManageEngine Report Framework", "Created Time"),{"Created Time","Date"}),
+		Table.RenameColumns(Table.SelectColumns(#"ManageEngine Report Framework", "Resolved Time"),{"Resolved Time","Date"}) } )
+		
+		e.g. = Table.Combine({Source, Table.SelectColumns(#"Table 1", "Column 1"), Table.SelectColumns(#"Table 2", "Column 2")})
+
