@@ -1,0 +1,8 @@
+All table from current model
+let
+Source = #shared,
+#"Converted to Table" = Record.ToTable(Source),
+#"Added Custom" = Table.AddColumn(#"Converted to Table", "Custom", each Value.Is([Value], Table.Type)),
+#"Filtered Rows" = Table.SelectRows(#"Added Custom", each ([Custom] = true))
+in
+#"Filtered Rows"
