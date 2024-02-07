@@ -1,0 +1,30 @@
+Replace value in multiple column:
+//1st way
+= Table.FromRecords(Table.TransformRows(#"Changed Type"
+, (x)=>Record.TransformFields(x, List.Transform( { "Col1", "Col1" }, (y) => { y, each if _  <> null then 115 else null}) ) ))
+
+//2nd way
+= Table.FromRecords(Table.TransformRows(#"Changed Type"
+, (x)=>Record.TransformFields(x, {
+{ "Col1", each if _  <> null and  _  >0  then 115 else if  _  <> null and  _  < 0  then -115 else null }, 
+{ "Col1", each if _  <> null and  _  >0  then 105 else if  _  <> null and  _  < 0  then -105 else null }
+} ) ))
+
+Replace value in multiple value:
+
+= Table.TransformColumns(#"Unpivoted Columns"
+,{"Value",each Text.Replace(Text.Replace(Text.Replace(Text.Replace(Text.Replace(Text.Replace(Text.Start( _ , Text.PositionOf( _ , "#", Occurrence.All){1}),"{",""),"Freq:",""),"Data:",""),"Launch of RESOLVE event by",""),"Public Launch of the platform by",""),"Publish by","")
+}
+)
+Replace value in multiple value: exact value not pattern
+=Table.ReplaceValue(#"Changed Type",
+each [Col1],
+each if List.Contains({"text1", "text2"}, [Col1], Comparer.OrdinalIgnoreCase) then "Yes" else "No" ,
+Replacer.ReplaceValue,{"Col1"})
+
+Replace Text value with null:
+= Table.ReplaceValue(#"Transform Baseline UOM Format",each Type.Is(Value.Type([Baseline]),type text),null,(x,y,z)=>if y then z else x,{"Baseline"})
+
+Remove HTML tag
+= Table.TransformColumns(#"Changed Type", {
+        {"ReviewSummary__c", each try Table.FirstValue(Html.Table(_, {{"text",":root"}})) otherwise null}} )
