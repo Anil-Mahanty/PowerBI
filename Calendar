@@ -1,0 +1,63 @@
+DAX Period Calendar:
+--------------------------------------
+SpecialDates = 
+VAR _datetable = DateTable
+VAR _today = TODAY()
+VAR _month = MONTH(TODAY())
+VAR _year = YEAR(TODAY())
+VAR _thismonthstart = DATE(_year,_month,1)
+VAR _thisyearstart = DATE(_year,1,1)
+VAR _lastmonthstart = EDATE(_thismonthstart,-1)
+VAR _lastmonthend = _thismonthstart-1  
+VAR _thisquarterstart = DATE(YEAR(_today),SWITCH(true,_month>9,10,_month>6,7,_month>3,4,1),1)
+
+
+RETURN UNION(
+    ADDCOLUMNS(FILTER(_datetable,[Date]=_today),"Period","Today","Order",1),
+    ADDCOLUMNS(FILTER(_datetable,[Date]=_today-1),"Period","Yesterday","Order",2),
+    ADDCOLUMNS(FILTER(_datetable,[Date]>_today-7),"Period","Last 7 Days","Order",3),
+    ADDCOLUMNS(FILTER(_datetable,[Date]>=_thismonthstart),"Period","This Month","Order",4),
+    ADDCOLUMNS(FILTER(_datetable,[Date]>=_thisquarterstart),"Period","This Quarter","Order",5),
+    ADDCOLUMNS(FILTER(_datetable,[Date]>=_thisyearstart),"Period","This Year","Order",6),
+    ADDCOLUMNS(FILTER(_datetable,[Date]>_today-30),"Period","Last 30 Days","Order",7),
+    ADDCOLUMNS(_datetable,"Period","Custom...","Order",8)
+    )
+
+=====================
+PQ Calendar:
+----------------------------
+let
+    Source = Table.Combine({
+        Table.Distinct(Table.SelectColumns(#"APS-RPS", "Date")),
+   Table.RenameColumns(
+        Table.Distinct(Table.SelectColumns(Filing, "Period_End"))
+        ,{"Period_End", "Date"} )
+}),
+    #"Added Custom1" = Table.AddColumn(Source, "MinDate", each List.Min( Source[Date])),
+    #"Added Custom" = Table.AddColumn(#"Added Custom1", "Max Date", each List.Max( #"Added Custom1"[Date])),
+    #"Removed Columns" = Table.RemoveColumns(#"Added Custom",{"Date"}),
+    #"Removed Duplicates" = Table.Distinct(#"Removed Columns", {"MinDate"}),
+    #"Added Custom2" = Table.AddColumn(#"Removed Duplicates", "Date", each {Number.From([MinDate])..Number.From([Max Date])}),
+    #"Expanded Date" = Table.ExpandListColumn(#"Added Custom2", "Date"),
+    #"Changed Type" = Table.TransformColumnTypes(#"Expanded Date",{{"Date", type date}}),
+    #"Removed Columns1" = Table.RemoveColumns(#"Changed Type",{"MinDate", "Max Date"}),
+    #"Inserted Year" = Table.AddColumn(#"Removed Columns1", "Year", each Date.Year([Date]), Int64.Type),
+    #"Inserted Month Name" = Table.AddColumn(#"Inserted Year", "Month Name", each Text.Start(Date.MonthName([Date]),3), type text),
+    #"Inserted Quarter" = Table.AddColumn(#"Inserted Month Name", "Quarter", each "Q"& Text.From(Date.QuarterOfYear([Date])), type text),
+    #"Added Custom3" = Table.AddColumn(#"Inserted Quarter", "Dummy", each 1),
+    #"Grouped Rows" = Table.Group(#"Added Custom3", {"Dummy"}, {{"Max", each List.Max([Date]), type nullable date}, {"All", each _, type table [Date=nullable date, Year=number, Month Name=text, Quarter=text, Dummy=number]}}),
+    #"Expanded All" = Table.ExpandTableColumn(#"Grouped Rows", "All", {"Date", "Year", "Month Name", "Quarter"}, {"Date", "Year", "Month Name", "Quarter"}),
+    #"Added Custom4" = Table.AddColumn(#"Expanded All", "Qtr Flag", each if Number.ToText(Date.Year([Max]))&"-Q"&Number.ToText(Date.QuarterOfYear([Max]))=Number.ToText([Year])&"-"&[Quarter] 
+then "Latest Quarter" 
+else if Number.ToText(Date.Year(Date.AddQuarters([Max], -1)))&"-Q"&Number.ToText(Date.QuarterOfYear(Date.AddQuarters([Max], -1)))=Number.ToText([Year])&"-"&[Quarter] then "Previous Quarter"
+else 0),
+    #"Added Custom5" = Table.AddColumn(#"Added Custom4", "Year Flag", each if Date.Year([Max])=[Year] then "Latest Year" 
+else if Date.Year([Max])-1=[Year]  then "Previous Year"
+else 0),
+    #"Added Custom6" = Table.AddColumn(#"Added Custom5", "Month Flag", each if Number.ToText(Date.Year([Max]))&"-"&Text.Start(Date.MonthName([Max]),3)=Number.ToText([Year])&"-"&[Month Name]
+then "Latest Month" 
+else if Number.ToText(Date.Year(Date.EndOfMonth(Date.AddMonths([Max], -1))))&"-"&Text.Start(Date.MonthName(Date.AddMonths([Max], -1)),3)=Number.ToText([Year])&"-"&[Month Name] then "Previous Month"
+else 0),
+    #"Removed Columns2" = Table.RemoveColumns(#"Added Custom6",{"Dummy", "Max"})
+in
+    #"Removed Columns2"
